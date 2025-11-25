@@ -122,9 +122,8 @@ function ListPageContent() {
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`${styles.pageBtn} ${
-            i === currentPage ? styles.activePage : ""
-          }`}
+          className={`${styles.pageBtn} ${i === currentPage ? styles.activePage : ""
+            }`}
         >
           {i}
         </button>
@@ -181,78 +180,85 @@ function ListPageContent() {
       <main className={styles.container}>
         <h1>Video Library</h1>
 
-      <div className={styles.searchContainer}>
-        <input
-          type="text"
-          placeholder="Search by tags..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-        {searchQuery && (
-          <button
-            onClick={handleClearSearch}
-            className={styles.clearBtn}
-          >
-            Clear
-          </button>
-        )}
-      </div>
-
-      {isLoading ? (
-        <div className={styles.loaderContainer}>
-          <div className={styles.loader}></div>
-          <p className={styles.loadingText}>Loading videos...</p>
+        <div className={styles.searchContainer}>
+          <input
+            type="text"
+            placeholder="Search by tags..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+          {searchQuery && (
+            <button
+              onClick={handleClearSearch}
+              className={styles.clearBtn}
+            >
+              Clear
+            </button>
+          )}
         </div>
-      ) : filteredVideos.length === 0 ? (
-        <p className={styles.noResults}>
-          No videos found matching your search.
-        </p>
-      ) : (
-        <>
-          {totalPages > 1 && renderPagination()}
 
-          <div className={styles.grid}>
-            {visibleVideos.map((item) => {
-              const tags = getTags(item.tags);
-              return (
-                <div key={item.id} className={styles.tileWrapper}>
-                  <Link
-                    href={`/video-organizer/view/${item.id}`}
-                    className={styles.tile}
-                  >
-                    <div className={styles.thumbnail}>
-                      <iframe
-                        src={item.link}
-                        title={item.tags}
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                    <div className={styles.info}>
-                      <p className={styles.duration}>{item.timeDuration}</p>
-                    </div>
-                  </Link>
-                  <div className={styles.tagsWrapper}>
-                    {tags.map((tag, index) => (
-                      <button
-                        key={index}
-                        onClick={(e) => handleTagClick(tag, e)}
-                        className={styles.tagBtn}
-                        title={`Filter by: ${tag}`}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+        {isLoading ? (
+          <div className={styles.loaderContainer}>
+            <div className={styles.loader}></div>
+            <p className={styles.loadingText}>Loading videos...</p>
           </div>
+        ) : filteredVideos.length === 0 ? (
+          <p className={styles.noResults}>
+            No videos found matching your search.
+          </p>
+        ) : (
+          <>
+            {totalPages > 1 && renderPagination()}
 
-          {totalPages > 1 && renderPagination()}
-        </>
-      )}
-    </main>
+            <div className={styles.grid}>
+              {visibleVideos.map((item) => {
+                const tags = getTags(item.tags);
+                return (
+                  <div key={item.id} className={styles.tileWrapper}>
+                    <Link
+                      href={`/video-organizer/view/${item.id}`}
+                      className={styles.tile}
+                    >
+                      <div className={styles.thumbnail}>
+                        {/* <iframe
+                          src={item.link}
+                          title={item.tags}
+                          allowFullScreen
+                        ></iframe> */}
+                      </div>
+                      <div className={styles.info}>
+                        <p className={styles.duration}>{item.timeDuration}</p>
+                      </div>
+                    </Link>
+                    <div className={styles.tagsWrapper}>
+                      <button
+                        onClick={() => window.open(item.link, "_blank", "noopener,noreferrer")}
+                        className={styles.openLinkBtn}
+                        type="button"
+                      >
+                        Open
+                      </button>
+                      {tags.map((tag, index) => (
+                        <button
+                          key={index}
+                          onClick={(e) => handleTagClick(tag, e)}
+                          className={styles.tagBtn}
+                          title={`Filter by: ${tag}`}
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {totalPages > 1 && renderPagination()}
+          </>
+        )}
+      </main>
     </PasswordProtection>
   );
 }
@@ -260,10 +266,10 @@ function ListPageContent() {
 export default function ListPage() {
   return (
     <Suspense fallback={
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         minHeight: '100vh',
         background: '#1a202c',
         color: '#e2e8f0'

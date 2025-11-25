@@ -13,10 +13,10 @@ export default function ViewPage() {
 
   useEffect(() => {
     const videoId = Number(params.id);
-    
+
     // Try to get video from localStorage using utility
     const found = videoStorage.getVideoById(videoId);
-    
+
     if (!found) {
       if (!videoStorage.hasVideoList()) {
         alert("No data found in localStorage. Go back to the list page first.");
@@ -56,53 +56,65 @@ export default function ViewPage() {
 
   return (
     <PasswordProtection>
-    <main className={styles.container}>
-      <div className={styles.videoWrapper}>
-        <iframe
-          src={item.link}
-          allowFullScreen
-          title="Video"
-          className={styles.videoFrame}
-        ></iframe>
-      </div>
-
-      <div className={styles.details}>
-        <h1 className={styles.title}>Video Details</h1>
-
-        <div className={styles.infoSection}>
-          <label className={styles.label}>Added Date:</label>
-          <p className={styles.value}>{formatDate(item.date)}</p>
+      <main className={styles.container}>
+        <div className={styles.videoWrapper}>
+          <iframe
+            src={item.link}
+            allowFullScreen
+            title="Video"
+            className={styles.videoFrame}
+          ></iframe>
         </div>
 
-        <div className={styles.infoSection}>
-          <label className={styles.label}>Duration:</label>
-          <p className={styles.value}>{item.timeDuration}</p>
-        </div>
+        <div className={styles.details}>
+          <h1 className={styles.title}>Video Details</h1>
 
-        <div className={styles.infoSection}>
-          <label className={styles.label}>Tags:</label>
-          <div className={styles.tagsContainer}>
-            {tags.map((tag, index) => (
-              <button
-                key={index}
-                onClick={() => handleTagClick(tag)}
-                className={styles.tag}
-                title={`View videos with tag: ${tag}`}
-              >
-                {tag}
-              </button>
-            ))}
+          <div className={styles.infoSection}>
+            <label className={styles.label}>Video Link</label>
+            <a
+              href={item.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.value}
+            >
+              {item.link}
+            </a>
           </div>
-        </div>
 
-        <button
-          onClick={() => router.push("/video-organizer/list")}
-          className={styles.backBtn}
-        >
-          ← Back to List
-        </button>
-      </div>
-    </main>
+          <div className={styles.infoSection}>
+            <label className={styles.label}>Added Date:</label>
+            <p className={styles.value}>{formatDate(item.date)}</p>
+          </div>
+
+          <div className={styles.infoSection}>
+            <label className={styles.label}>Duration:</label>
+            <p className={styles.value}>{item.timeDuration}</p>
+          </div>
+
+          <div className={styles.infoSection}>
+            <label className={styles.label}>Tags:</label>
+            <div className={styles.tagsContainer}>
+              {tags.map((tag, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleTagClick(tag)}
+                  className={styles.tag}
+                  title={`View videos with tag: ${tag}`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={() => router.push("/video-organizer/list")}
+            className={styles.backBtn}
+          >
+            ← Back to List
+          </button>
+        </div>
+      </main>
     </PasswordProtection>
   );
 }
