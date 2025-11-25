@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     range: "Sheet1!A:D",
     valueInputOption: "USER_ENTERED",
     requestBody: {
-      values: [[new Date(), encrypt(link), tags, timeDuration]],
+      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration]],
     },
   });
 
@@ -55,40 +55,8 @@ export async function GET() {
       id: idx,
       date: row[0],
       link: decrypt(row[1]),
-      tags: row[2],
+      tags: decrypt(row[2]),
       timeDuration: row[3],
     }));
-
-  // const dataWithId = [
-  //   {
-  //     id: 1,
-  //     date: new Date().toString(),
-  //     link: "https://www.youtube.com/embed/DNL-SZMV-EU?list=RDDNL-SZMV-EU",
-  //     tags: "YT, test",
-  //     timeDuration: "10:00",
-  //   },
-  //   {
-  //     id: 2,
-  //     date: new Date().toString(),
-  //     link: "https://www.youtube.com/embed/2euX0MvU-Wo?list=RD2euX0MvU-Wo",
-  //     tags: "example, test",
-  //     timeDuration: "10:00",
-  //   },
-  //   {
-  //     id: 3,
-  //     date: new Date().toString(),
-  //     link: "https://www.youtube.com/embed/DNL-SZMV-EU?list=RDDNL-SZMV-EU",
-  //     tags: "example, test",
-  //     timeDuration: "10:00",
-  //   },
-  //   {
-  //     id: 4,
-  //     date: new Date().toString(),
-  //     link: "https://www.youtube.com/embed/DNL-SZMV-EU?list=RDDNL-SZMV-EU",
-  //     tags: "example, test",
-  //     timeDuration: "10:00",
-  //   },
-  // ];
-
   return Response.json({ success: true, data: dataWithId });
 }
