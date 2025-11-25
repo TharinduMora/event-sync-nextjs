@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import styles from "./page.module.css";
@@ -11,7 +11,7 @@ import { videoApi } from "../utils/videoApi";
 
 const ITEMS_PER_PAGE = 3;
 
-export default function ListPage() {
+function ListPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [data, setData] = useState<VideoItem[]>([]);
@@ -254,5 +254,24 @@ export default function ListPage() {
       )}
     </main>
     </PasswordProtection>
+  );
+}
+
+export default function ListPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        minHeight: '100vh',
+        background: '#1a202c',
+        color: '#e2e8f0'
+      }}>
+        <div>Loading...</div>
+      </div>
+    }>
+      <ListPageContent />
+    </Suspense>
   );
 }
