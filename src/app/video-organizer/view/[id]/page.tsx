@@ -15,10 +15,10 @@ function ViewPageContent() {
 
   useEffect(() => {
     const videoId = Number(params.id);
-
+    
     // Try to get video from localStorage using utility
     const found = videoStorage.getVideoById(videoId);
-
+    
     if (!found) {
       if (!videoStorage.hasVideoList()) {
         showToast("No data found in localStorage. Go back to the list page first.", "error");
@@ -30,9 +30,7 @@ function ViewPageContent() {
     }
 
     setItem(found);
-  }, [params.id, router]);
-
-  const formatDate = (dateString: string) => {
+  }, [params.id, router, showToast]);  const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");

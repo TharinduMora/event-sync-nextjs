@@ -7,7 +7,6 @@ import PasswordProtection from "../../components/PasswordProtection";
 import { ToastProvider, useToast } from "../../components/ToastProvider";
 import { videoApi } from "../../utils/videoApi";
 import { videoStorage } from "../../utils/videoStorage";
-import { VideoItem } from "../../utils/types";
 
 function EditPageContent() {
   const { showToast } = useToast();
