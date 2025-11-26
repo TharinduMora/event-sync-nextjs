@@ -60,3 +60,33 @@ export async function GET() {
     }));
   return Response.json({ success: true, data: dataWithId });
 }
+
+export async function PUT(request: Request) {
+  const body = await request.json();
+  const { id, link, tags, timeDuration } = body;
+
+  const auth = new google.auth.GoogleAuth({
+    credentials: {
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    },
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  const sheets = google.sheets({ version: "v4", auth });
+  const sheetId = process.env.GOOGLE_SHEET_ID as string;
+
+  // Row index is id + 2 (1 for header, 1 for 0-based to 1-based conversion)
+  const rowIndex = id + 2;
+
+  const response = await sheets.spreadsheets.values.update({
+    spreadsheetId: sheetId,
+    range: `Sheet1!A${rowIndex}:D${rowIndex}`,
+    valueInputOption: "USER_ENTERED",
+    requestBody: {
+      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration]],
+    },
+  });
+
+  return Response.json({ success: true, data: response.data });
+}

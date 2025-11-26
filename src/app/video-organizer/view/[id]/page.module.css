@@ -91,8 +91,14 @@
     transform: scale(0.98);
 }
 
-.backBtn {
+.buttonGroup {
+    display: flex;
+    gap: 1rem;
     margin-top: 2rem;
+}
+
+.backBtn {
+    flex: 1;
     padding: 0.65rem 1.25rem;
     background: #6c757d;
     color: white;
@@ -105,6 +111,22 @@
 
 .backBtn:hover {
     background: #5a6268;
+}
+
+.editBtn {
+    flex: 1;
+    padding: 0.65rem 1.25rem;
+    background: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.editBtn:hover {
+    background: #0051cc;
 }
 
 @media (max-width: 768px) {

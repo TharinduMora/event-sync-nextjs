@@ -1,14 +1,20 @@
 "use client";
 import { useState, useEffect, FormEvent, KeyboardEvent } from "react";
-import styles from "./page.module.css";
-import VideoOrganizerNavbar from "./components/navbar";
-import PasswordProtection from "./components/PasswordProtection";
-import { ToastProvider, useToast } from "./components/ToastProvider";
-import { videoApi } from "./utils/videoApi";
-import { videoStorage } from "./utils/videoStorage";
+import { useParams, useRouter } from "next/navigation";
+import styles from "../../page.module.css";
+import VideoOrganizerNavbar from "../../components/navbar";
+import PasswordProtection from "../../components/PasswordProtection";
+import { ToastProvider, useToast } from "../../components/ToastProvider";
+import { videoApi } from "../../utils/videoApi";
+import { videoStorage } from "../../utils/videoStorage";
+import { VideoItem } from "../../utils/types";
 
-function HomePageContent() {
+function EditPageContent() {
   const { showToast } = useToast();
+  const params = useParams();
+  const router = useRouter();
+  const videoId = Number(params.id);
+  
   const [link, setLink] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
@@ -17,12 +23,33 @@ function HomePageContent() {
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load available tags from localStorage
-    const tags = videoStorage.getAllTags();
-    setAvailableTags(tags);
-  }, []);
+    // Load video data
+    const video = videoStorage.getVideoById(videoId);
+    if (!video) {
+      showToast("Video not found", "error");
+      router.push("/video-organizer/list");
+      return;
+    }
+
+    setLink(video.link);
+    setTimeDuration(video.timeDuration);
+    
+    // Parse tags
+    const videoTags = video.tags
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag);
+    setTags(videoTags);
+
+    // Load available tags
+    const allTags = videoStorage.getAllTags();
+    setAvailableTags(allTags);
+    
+    setIsLoading(false);
+  }, [videoId, router, showToast]);
 
   useEffect(() => {
     // Filter suggestions based on input
@@ -74,31 +101,43 @@ function HomePageContent() {
     try {
       const tagsString = tags.join(", ");
 
-      // Use API service to submit video
-      await videoApi.submitVideo({
+      // Use API service to update video
+      await videoApi.updateVideo({
+        id: videoId,
         link,
         tags: tagsString,
         timeDuration,
       });
 
-      // Clear form on success
-      setLink("");
-      setTags([]);
-      setTagInput("");
-      setTimeDuration("");
-      showToast("Video submitted successfully!", "success");
+      showToast("Video updated successfully!", "success");
+      
+      // Navigate back to view page after short delay
+      setTimeout(() => {
+        router.push(`/video-organizer/view/${videoId}`);
+      }, 1000);
     } catch {
-      showToast("Failed to submit video. Please try again.", "error");
+      showToast("Failed to update video. Please try again.", "error");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (isLoading) {
+    return (
+      <PasswordProtection>
+        <VideoOrganizerNavbar />
+        <main className={styles.container}>
+          <p style={{ textAlign: "center", marginTop: "2rem" }}>Loading...</p>
+        </main>
+      </PasswordProtection>
+    );
+  }
+
   return (
     <PasswordProtection>
       <VideoOrganizerNavbar />
       <main className={styles.container}>
-        <h1>Submit Video Entry</h1>
+        <h1>Edit Video Entry</h1>
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label>Video Link:</label>
@@ -180,23 +219,32 @@ function HomePageContent() {
             />
           </div>
 
-          <button
-            type="submit"
-            className={styles.submitBtn}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Saving..." : "Save Video"}
-          </button>
+          <div className={styles.buttonGroup}>
+            <button
+              type="button"
+              onClick={() => router.push(`/video-organizer/view/${videoId}`)}
+              className={styles.cancelBtn}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Updating..." : "Update Video"}
+            </button>
+          </div>
         </form>
       </main>
     </PasswordProtection>
   );
 }
 
-export default function HomePage() {
+export default function EditPage() {
   return (
     <ToastProvider>
-      <HomePageContent />
+      <EditPageContent />
     </ToastProvider>
   );
 }

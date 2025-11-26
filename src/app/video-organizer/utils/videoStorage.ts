@@ -1,12 +1,21 @@
 import { VideoItem } from "./types";
 
 const VIDEO_LIST_KEY = "videoList";
+const TAGS_KEY = "videoTags";
 
 export const videoStorage = {
   // Save video list to localStorage
   saveVideoList: (videos: VideoItem[]): void => {
     if (typeof window !== "undefined") {
       localStorage.setItem(VIDEO_LIST_KEY, JSON.stringify(videos));
+      
+      // Extract and save unique tags
+      const allTags = new Set<string>();
+      videos.forEach(video => {
+        const tags = video.tags.split(",").map(tag => tag.trim()).filter(tag => tag);
+        tags.forEach(tag => allTags.add(tag));
+      });
+      localStorage.setItem(TAGS_KEY, JSON.stringify(Array.from(allTags)));
     }
   },
 
@@ -46,5 +55,21 @@ export const videoStorage = {
       return localStorage.getItem(VIDEO_LIST_KEY) !== null;
     }
     return false;
+  },
+
+  // Get all unique tags from localStorage
+  getAllTags: (): string[] => {
+    if (typeof window !== "undefined") {
+      const tagsStr = localStorage.getItem(TAGS_KEY);
+      if (tagsStr) {
+        try {
+          return JSON.parse(tagsStr) as string[];
+        } catch (error) {
+          console.error("Error parsing tags from localStorage:", error);
+          return [];
+        }
+      }
+    }
+    return [];
   },
 };

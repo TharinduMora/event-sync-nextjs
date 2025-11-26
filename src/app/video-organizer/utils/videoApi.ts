@@ -46,4 +46,30 @@ export const videoApi = {
       throw error;
     }
   },
+
+  // Update an existing video entry
+  updateVideo: async (videoData: {
+    id: number;
+    link: string;
+    tags: string;
+    timeDuration: string;
+  }): Promise<void> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/sheet-data`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(videoData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update video: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error("Error updating video:", error);
+      throw error;
+    }
+  },
 };

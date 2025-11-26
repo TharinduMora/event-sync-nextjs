@@ -5,9 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import VideoOrganizerNavbar from "../components/navbar";
 import PasswordProtection from "../components/PasswordProtection";
+import { ToastProvider } from "../components/ToastProvider";
 import { VideoItem } from "../utils/types";
 import { videoStorage } from "../utils/videoStorage";
-import { videoApi } from "../utils/videoApi";
 
 const ITEMS_PER_PAGE = 3;
 
@@ -20,22 +20,16 @@ function ListPageContent() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const load = async () => {
-      setIsLoading(true);
-      try {
-        // Use API service to fetch videos
-        const videos = await videoApi.fetchVideos();
-        setData(videos);
-
-        // Save to localStorage using utility
-        videoStorage.saveVideoList(videos);
-      } catch (error) {
-        console.error("Error loading videos:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    load();
+    // Load videos from localStorage only
+    setIsLoading(true);
+    try {
+      const videos = videoStorage.getVideoList();
+      setData(videos || []);
+    } catch (error) {
+      console.error("Error loading videos:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   // Set search query from URL parameter
@@ -265,19 +259,21 @@ function ListPageContent() {
 
 export default function ListPage() {
   return (
-    <Suspense fallback={
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        background: '#1a202c',
-        color: '#e2e8f0'
-      }}>
-        <div>Loading...</div>
-      </div>
-    }>
-      <ListPageContent />
-    </Suspense>
+    <ToastProvider>
+      <Suspense fallback={
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          minHeight: '100vh',
+          background: '#1a202c',
+          color: '#e2e8f0'
+        }}>
+          <div>Loading...</div>
+        </div>
+      }>
+        <ListPageContent />
+      </Suspense>
+    </ToastProvider>
   );
 }

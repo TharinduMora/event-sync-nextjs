@@ -3,13 +3,15 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import PasswordProtection from "../../components/PasswordProtection";
+import { ToastProvider, useToast } from "../../components/ToastProvider";
 import { VideoItem } from "../../utils/types";
 import { videoStorage } from "../../utils/videoStorage";
 
-export default function ViewPage() {
+function ViewPageContent() {
   const params = useParams();
   const router = useRouter();
   const [item, setItem] = useState<VideoItem | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const videoId = Number(params.id);
@@ -19,9 +21,9 @@ export default function ViewPage() {
 
     if (!found) {
       if (!videoStorage.hasVideoList()) {
-        alert("No data found in localStorage. Go back to the list page first.");
+        showToast("No data found in localStorage. Go back to the list page first.", "error");
       } else {
-        alert("Item not found.");
+        showToast("Item not found.", "error");
       }
       router.push("/video-organizer/list");
       return;
@@ -107,14 +109,30 @@ export default function ViewPage() {
             </div>
           </div>
 
-          <button
-            onClick={() => router.push("/video-organizer/list")}
-            className={styles.backBtn}
-          >
-            ← Back to List
-          </button>
+          <div className={styles.buttonGroup}>
+            <button
+              onClick={() => router.push("/video-organizer/list")}
+              className={styles.backBtn}
+            >
+              ← Back to List
+            </button>
+            <button
+              onClick={() => router.push(`/video-organizer/edit/${item.id}`)}
+              className={styles.editBtn}
+            >
+              ✏️ Edit Video
+            </button>
+          </div>
         </div>
       </main>
     </PasswordProtection>
+  );
+}
+
+export default function ViewPage() {
+  return (
+    <ToastProvider>
+      <ViewPageContent />
+    </ToastProvider>
   );
 }
