@@ -27,6 +27,7 @@ export const videoApi = {
     link: string;
     tags: string;
     timeDuration: string;
+    thumbnail?: string;
   }): Promise<void> => {
     try {
       const response = await fetch(`${API_BASE_URL}/sheet-data`, {
@@ -53,6 +54,7 @@ export const videoApi = {
     link: string;
     tags: string;
     timeDuration: string;
+    thumbnail?: string;
   }): Promise<void> => {
     try {
       const response = await fetch(`${API_BASE_URL}/sheet-data`, {

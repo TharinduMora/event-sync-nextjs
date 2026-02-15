@@ -4,4 +4,5 @@ export interface VideoItem {
   date: string;
   tags: string;
   timeDuration: string;
+  thumbnail?: string;
 }

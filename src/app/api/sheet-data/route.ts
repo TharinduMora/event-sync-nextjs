@@ -3,7 +3,7 @@ import { google } from "googleapis";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { link, tags, timeDuration } = body;
+  const { link, tags, timeDuration, thumbnail } = body;
 
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -18,10 +18,10 @@ export async function POST(request: Request) {
 
   const response = await sheets.spreadsheets.values.append({
     spreadsheetId: sheetId,
-    range: "Sheet1!A:D",
+    range: "Sheet1!A:E",
     valueInputOption: "USER_ENTERED",
     requestBody: {
-      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration]],
+      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration, encrypt(thumbnail || "")]],
     },
   });
 
@@ -43,7 +43,7 @@ export async function GET() {
 
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: "Sheet1!A:D", // adjust if your sheet name or columns differ
+    range: "Sheet1!A:E", // adjust if your sheet name or columns differ
   });
 
   const rows = response.data.values || [];
@@ -57,13 +57,14 @@ export async function GET() {
       link: decrypt(row[1]),
       tags: decrypt(row[2]),
       timeDuration: row[3],
+      thumbnail: row[4] ? decrypt(row[4]) : undefined,
     }));
   return Response.json({ success: true, data: dataWithId });
 }
 
 export async function PUT(request: Request) {
   const body = await request.json();
-  const { id, link, tags, timeDuration } = body;
+  const { id, link, tags, timeDuration, thumbnail } = body;
 
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -81,10 +82,10 @@ export async function PUT(request: Request) {
 
   const response = await sheets.spreadsheets.values.update({
     spreadsheetId: sheetId,
-    range: `Sheet1!A${rowIndex}:D${rowIndex}`,
+    range: `Sheet1!A${rowIndex}:E${rowIndex}`,
     valueInputOption: "USER_ENTERED",
     requestBody: {
-      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration]],
+      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration, encrypt(thumbnail || "")]],
     },
   });
 

@@ -9,7 +9,7 @@ import { ToastProvider } from "../components/ToastProvider";
 import { VideoItem } from "../utils/types";
 import { videoStorage } from "../utils/videoStorage";
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 9;
 
 function ListPageContent() {
   const searchParams = useSearchParams();
@@ -215,11 +215,11 @@ function ListPageContent() {
                       className={styles.tile}
                     >
                       <div className={styles.thumbnail}>
-                        {/* <iframe
-                          src={item.link}
-                          title={item.tags}
-                          allowFullScreen
-                        ></iframe> */}
+                        {item.thumbnail ? (
+                          <img src={item.thumbnail} alt="Video Thumbnail" />
+                        ) : (
+                          <div className={styles.noThumbnail}>No Thumbnail</div>
+                        )}
                       </div>
                       <div className={styles.info}>
                         <p className={styles.duration}>{item.timeDuration}</p>

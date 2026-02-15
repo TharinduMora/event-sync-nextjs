@@ -15,6 +15,7 @@ function EditPageContent() {
   const videoId = Number(params.id);
   
   const [link, setLink] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [timeDuration, setTimeDuration] = useState("");
@@ -35,7 +36,8 @@ function EditPageContent() {
 
     setLink(video.link);
     setTimeDuration(video.timeDuration);
-    
+    setThumbnail(video.thumbnail || "");
+
     // Parse tags
     const videoTags = video.tags
       .split(",")
@@ -106,6 +108,7 @@ function EditPageContent() {
         link,
         tags: tagsString,
         timeDuration,
+        thumbnail
       });
 
       showToast("Video updated successfully!", "success");
@@ -143,6 +146,16 @@ function EditPageContent() {
             <input
               value={link}
               onChange={(e) => setLink(e.target.value)}
+              type="url"
+              required
+              className={styles.input}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Thumbnail:</label>
+            <input
+              value={thumbnail}
+              onChange={(e) => setThumbnail(e.target.value)}
               type="url"
               required
               className={styles.input}

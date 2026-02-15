@@ -10,6 +10,7 @@ import { videoStorage } from "./utils/videoStorage";
 function HomePageContent() {
   const { showToast } = useToast();
   const [link, setLink] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [timeDuration, setTimeDuration] = useState("");
@@ -79,10 +80,12 @@ function HomePageContent() {
         link,
         tags: tagsString,
         timeDuration,
+        thumbnail
       });
 
       // Clear form on success
       setLink("");
+      setThumbnail("");
       setTags([]);
       setTagInput("");
       setTimeDuration("");
@@ -105,6 +108,17 @@ function HomePageContent() {
             <input
               value={link}
               onChange={(e) => setLink(e.target.value)}
+              type="url"
+              required
+              className={styles.input}
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Thumbnail:</label>
+            <input
+              value={thumbnail}
+              onChange={(e) => setThumbnail(e.target.value)}
               type="url"
               required
               className={styles.input}
@@ -171,7 +185,7 @@ function HomePageContent() {
           <div className={styles.formGroup}>
             <label>Time Duration:</label>
             <input
-              value={timeDuration}
+              value={timeDuration || 0}
               onChange={(e) => setTimeDuration(e.target.value)}
               type="text"
               placeholder="e.g., 5:30"
