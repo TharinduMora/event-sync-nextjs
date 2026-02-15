@@ -120,7 +120,6 @@ function HomePageContent() {
               value={thumbnail}
               onChange={(e) => setThumbnail(e.target.value)}
               type="url"
-              required
               className={styles.input}
             />
           </div>
