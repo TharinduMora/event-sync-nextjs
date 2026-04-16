@@ -22,11 +22,10 @@ function EditSheetMetadataContent() {
     google_sheet_id: "",
     rowId,
   });
-  const [originalData, setOriginalData] = useState<SheetMetadata | null>(null);
-
   useEffect(() => {
     loadData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowId]);
 
   const loadData = async () => {
     try {
@@ -34,7 +33,6 @@ function EditSheetMetadataContent() {
       const item = allData.find((d) => d.rowId === rowId);
       if (item) {
         setFormData(item);
-        setOriginalData(item);
       } else {
         showToast("Sheet metadata not found", "error");
         setTimeout(() => router.push("/video-organizer/sheet-metadata"), 1500);

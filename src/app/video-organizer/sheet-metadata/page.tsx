@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { metadataApi, SheetMetadata } from "./utils";
 import { sheetSelection } from "../utils/sheetSelection";
@@ -11,7 +10,6 @@ import PasswordProtection from "../components/PasswordProtection";
 import { ToastProvider } from "../components/ToastProvider";
 
 function SheetMetadataListContent() {
-  const router = useRouter();
   const [data, setData] = useState<SheetMetadata[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSyncing, setIsSyncing] = useState(false);
@@ -153,7 +151,7 @@ function SheetMetadataListContent() {
           </div>
         ) : data.length === 0 ? (
           <p className={styles.noResults}>
-            No sheet metadata found. Click "Sync" to fetch from Google Sheets or create one manually!
+            No sheet metadata found. Click &quot;Sync&quot; to fetch from Google Sheets or create one manually!
           </p>
         ) : filteredData.length === 0 ? (
           <p className={styles.noResults}>

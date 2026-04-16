@@ -1,21 +1,23 @@
 // Utility for managing sheet metadata in local storage
+import { SheetMetadata } from "./utils";
+
 const METADATA_CACHE_KEY = "sheetMetadataCache";
 
 export interface CachedMetadata {
-  data: any[];
+  data: SheetMetadata[];
   timestamp: number;
 }
 
 export const metadataStorage = {
   // Get cached metadata
-  getCachedMetadata: (): any[] | null => {
+  getCachedMetadata: (): SheetMetadata[] | null => {
     if (typeof window === "undefined") return null;
     const cached = localStorage.getItem(METADATA_CACHE_KEY);
     return cached ? JSON.parse(cached).data : null;
   },
 
   // Save metadata to cache
-  saveCachedMetadata: (data: any[]): void => {
+  saveCachedMetadata: (data: SheetMetadata[]): void => {
     if (typeof window === "undefined") return;
     localStorage.setItem(
       METADATA_CACHE_KEY,
