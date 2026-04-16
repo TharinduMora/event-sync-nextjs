@@ -18,7 +18,6 @@ function EditPageContent() {
   const [thumbnail, setThumbnail] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
-  const [timeDuration, setTimeDuration] = useState("");
   const [status, setStatus] = useState("ACTIVE");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
@@ -36,7 +35,6 @@ function EditPageContent() {
     }
 
     setLink(video.link);
-    setTimeDuration(video.timeDuration);
     setThumbnail(video.thumbnail || "");
     setStatus(video.status || "ACTIVE");
 
@@ -109,7 +107,6 @@ function EditPageContent() {
         id: videoId,
         link,
         tags: tagsString,
-        timeDuration,
         thumbnail,
         status
       });
@@ -224,18 +221,6 @@ function EditPageContent() {
                 ))}
               </div>
             )}
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Time Duration:</label>
-            <input
-              value={timeDuration}
-              onChange={(e) => setTimeDuration(e.target.value)}
-              type="text"
-              placeholder="e.g., 5:30"
-              required
-              className={styles.input}
-            />
           </div>
 
           <div className={styles.formGroup}>

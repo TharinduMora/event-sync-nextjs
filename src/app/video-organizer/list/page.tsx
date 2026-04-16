@@ -263,9 +263,6 @@ function ListPageContent() {
                           <div className={styles.noThumbnail}>No Thumbnail</div>
                         )}
                       </div>
-                      <div className={styles.info}>
-                        <p className={styles.duration}>{item.timeDuration}</p>
-                      </div>
                     </Link>
                     <div className={styles.tagsWrapper}>
                       <button

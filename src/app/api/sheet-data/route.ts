@@ -22,10 +22,10 @@ export async function POST(request: Request) {
 
   const response = await sheets.spreadsheets.values.append({
     spreadsheetId: sheetId,
-    range: "Sheet1!A:E",
+    range: "Sheet1!A:F",
     valueInputOption: "USER_ENTERED",
     requestBody: {
-      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration, encrypt(thumbnail || "")]],
+      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration || 0, encrypt(thumbnail || ""), "ACTIVE"]],
     },
   });
 
@@ -98,7 +98,7 @@ export async function PUT(request: Request) {
     range: `Sheet1!A${rowIndex}:F${rowIndex}`,
     valueInputOption: "USER_ENTERED",
     requestBody: {
-      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration, encrypt(thumbnail || ""), status || "ACTIVE"]],
+      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration || 0, encrypt(thumbnail || ""), status || "ACTIVE"]],
     },
   });
 

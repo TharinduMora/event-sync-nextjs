@@ -93,11 +93,6 @@ function ViewPageContent() {
           </div>
 
           <div className={styles.infoSection}>
-            <label className={styles.label}>Duration:</label>
-            <p className={styles.value}>{item.timeDuration}</p>
-          </div>
-
-          <div className={styles.infoSection}>
             <label className={styles.label}>Tags:</label>
             <div className={styles.tagsContainer}>
               {tags.map((tag, index) => (

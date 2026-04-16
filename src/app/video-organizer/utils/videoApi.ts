@@ -70,7 +70,7 @@ export const videoApi = {
     id: number;
     link: string;
     tags: string;
-    timeDuration: string;
+    timeDuration?: string;
     thumbnail?: string;
     status?: string;
   }): Promise<void> => {
