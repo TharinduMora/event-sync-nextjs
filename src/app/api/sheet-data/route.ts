@@ -51,7 +51,7 @@ export async function GET(request: Request) {
 
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: "Sheet1!A:E", // adjust if your sheet name or columns differ
+    range: "Sheet1!A:F", // adjust if your sheet name or columns differ
   });
 
   const rows = response.data.values || [];
@@ -66,13 +66,14 @@ export async function GET(request: Request) {
       tags: decrypt(row[2]),
       timeDuration: row[3],
       thumbnail: row[4] ? decrypt(row[4]) : undefined,
+      status: row[5] || "ACTIVE",
     }));
   return Response.json({ success: true, data: dataWithId });
 }
 
 export async function PUT(request: Request) {
   const body = await request.json();
-  const { id, link, tags, timeDuration, thumbnail, sheetId: providedSheetId } = body;
+  const { id, link, tags, timeDuration, thumbnail, status, sheetId: providedSheetId } = body;
   const { searchParams } = new URL(request.url);
   const sheetIdParam = searchParams.get("sheetId");
 
@@ -94,10 +95,10 @@ export async function PUT(request: Request) {
 
   const response = await sheets.spreadsheets.values.update({
     spreadsheetId: sheetId,
-    range: `Sheet1!A${rowIndex}:E${rowIndex}`,
+    range: `Sheet1!A${rowIndex}:F${rowIndex}`,
     valueInputOption: "USER_ENTERED",
     requestBody: {
-      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration, encrypt(thumbnail || "")]],
+      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration, encrypt(thumbnail || ""), status || "ACTIVE"]],
     },
   });
 

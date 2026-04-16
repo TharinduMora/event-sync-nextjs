@@ -69,6 +69,12 @@ function ViewPageContent() {
         <div className={styles.details}>
           <h1 className={styles.title}>Video Details</h1>
 
+          {item.status === "DELETED" && (
+            <div className={styles.deletedBanner}>
+              <span className={styles.deletedBadge}>🗑️ DELETED</span>
+            </div>
+          )}
+
           <div className={styles.infoSection}>
             <label className={styles.label}>Video Link</label>
             <a

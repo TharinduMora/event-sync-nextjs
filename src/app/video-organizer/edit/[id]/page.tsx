@@ -19,6 +19,7 @@ function EditPageContent() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [timeDuration, setTimeDuration] = useState("");
+  const [status, setStatus] = useState("ACTIVE");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
@@ -37,6 +38,7 @@ function EditPageContent() {
     setLink(video.link);
     setTimeDuration(video.timeDuration);
     setThumbnail(video.thumbnail || "");
+    setStatus(video.status || "ACTIVE");
 
     // Parse tags
     const videoTags = video.tags
@@ -108,7 +110,8 @@ function EditPageContent() {
         link,
         tags: tagsString,
         timeDuration,
-        thumbnail
+        thumbnail,
+        status
       });
 
       showToast("Video updated successfully!", "success");
@@ -140,6 +143,11 @@ function EditPageContent() {
       <VideoOrganizerNavbar />
       <main className={styles.container}>
         <h1>Edit Video Entry</h1>
+        {status === "DELETED" && (
+          <div className={styles.deletedBanner}>
+            <span className={styles.deletedBadge}>🗑️ This video is marked as DELETED</span>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label>Video Link:</label>
@@ -228,6 +236,17 @@ function EditPageContent() {
               required
               className={styles.input}
             />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={status === "DELETED"}
+                onChange={(e) => setStatus(e.target.checked ? "DELETED" : "ACTIVE")}
+              />
+              Mark as Deleted
+            </label>
           </div>
 
           <div className={styles.buttonGroup}>

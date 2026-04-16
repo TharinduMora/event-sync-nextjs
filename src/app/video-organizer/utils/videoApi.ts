@@ -72,6 +72,7 @@ export const videoApi = {
     tags: string;
     timeDuration: string;
     thumbnail?: string;
+    status?: string;
   }): Promise<void> => {
     try {
       const selectedSheet = sheetSelection.getSelectedSheet();

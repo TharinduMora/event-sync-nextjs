@@ -5,4 +5,5 @@ export interface VideoItem {
   tags: string;
   timeDuration: string;
   thumbnail?: string;
+  status?: string;
 }
