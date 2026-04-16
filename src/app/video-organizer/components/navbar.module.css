@@ -83,22 +83,56 @@
   cursor: not-allowed;
 }
 
+.selectedSheetInfo {
+  display: flex;
+  align-items: center;
+  margin: 0 0.5rem;
+}
+
+.selectedSheetText {
+  padding: 0.5rem 1rem;
+  background: #2d3748;
+  color: #90ee90;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  border: 1px solid #4a5568;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 1rem;
+    flex-wrap: wrap;
+    height: auto;
+    gap: 0.5rem;
   }
 
   .logo {
     font-size: 1rem;
+    flex: 1 0 auto;
+  }
+
+  .tabs {
+    flex: 1 0 100%;
+    gap: 0.3rem;
+    flex-wrap: wrap;
   }
 
   .tab {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
   }
 
   .fetchBtn {
-    padding: 0.5rem 0.9rem;
-    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .selectedSheetText {
+    max-width: 150px;
   }
 }

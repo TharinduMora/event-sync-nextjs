@@ -1,4 +1,5 @@
 import { VideoItem } from "./types";
+import { sheetSelection } from "./sheetSelection";
 
 const API_BASE_URL = "/api";
 
@@ -6,7 +7,15 @@ export const videoApi = {
   // Fetch all videos from the sheet data API
   fetchVideos: async (): Promise<VideoItem[]> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/sheet-data`, {
+      const selectedSheet = sheetSelection.getSelectedSheet();
+      if (!selectedSheet) {
+        throw new Error("No sheet selected. Please select a sheet from the Sheets tab.");
+      }
+
+      const url = new URL(`${window.location.origin}${API_BASE_URL}/sheet-data`);
+      url.searchParams.append("sheetId", selectedSheet.google_sheet_id);
+
+      const response = await fetch(url.toString(), {
         cache: "no-store",
       });
 
@@ -30,7 +39,15 @@ export const videoApi = {
     thumbnail?: string;
   }): Promise<void> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/sheet-data`, {
+      const selectedSheet = sheetSelection.getSelectedSheet();
+      if (!selectedSheet) {
+        throw new Error("No sheet selected. Please select a sheet from the Sheets tab.");
+      }
+
+      const url = new URL(`${window.location.origin}${API_BASE_URL}/sheet-data`);
+      url.searchParams.append("sheetId", selectedSheet.google_sheet_id);
+
+      const response = await fetch(url.toString(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(videoData),
@@ -57,7 +74,15 @@ export const videoApi = {
     thumbnail?: string;
   }): Promise<void> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/sheet-data`, {
+      const selectedSheet = sheetSelection.getSelectedSheet();
+      if (!selectedSheet) {
+        throw new Error("No sheet selected. Please select a sheet from the Sheets tab.");
+      }
+
+      const url = new URL(`${window.location.origin}${API_BASE_URL}/sheet-data`);
+      url.searchParams.append("sheetId", selectedSheet.google_sheet_id);
+
+      const response = await fetch(url.toString(), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(videoData),

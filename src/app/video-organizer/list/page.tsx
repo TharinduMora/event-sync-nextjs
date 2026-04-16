@@ -8,6 +8,7 @@ import PasswordProtection from "../components/PasswordProtection";
 import { ToastProvider } from "../components/ToastProvider";
 import { VideoItem } from "../utils/types";
 import { videoStorage } from "../utils/videoStorage";
+import { sheetSelection, SelectedSheet } from "../utils/sheetSelection";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -18,6 +19,13 @@ function ListPageContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedSheet, setSelectedSheet] = useState<SelectedSheet | null>(null);
+
+  useEffect(() => {
+    // Load selected sheet
+    const sheet = sheetSelection.getSelectedSheet();
+    setSelectedSheet(sheet);
+  }, []);
 
   useEffect(() => {
     // Load videos from localStorage only
@@ -172,7 +180,7 @@ function ListPageContent() {
     <PasswordProtection>
       <VideoOrganizerNavbar />
       <main className={styles.container}>
-        <h1>Video Library</h1>
+        <h1>Video Library {selectedSheet && `- ${selectedSheet.name}`}</h1>
 
         <div className={styles.searchContainer}>
           <input

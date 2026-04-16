@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./navbar.module.css";
@@ -7,17 +7,30 @@ import { clearVideoOrganizerAuth } from "./PasswordProtection";
 import { videoApi } from "../utils/videoApi";
 import { videoStorage } from "../utils/videoStorage";
 import { useToast } from "./ToastProvider";
+import { sheetSelection, SelectedSheet } from "../utils/sheetSelection";
 
 export default function VideoOrganizerNavbar() {
   const pathname = usePathname();
   const [isFetching, setIsFetching] = useState(false);
+  const [selectedSheet, setSelectedSheet] = useState<SelectedSheet | null>(null);
   const { showToast } = useToast();
+
+  // Load selected sheet on mount
+  useEffect(() => {
+    const sheet = sheetSelection.getSelectedSheet();
+    setSelectedSheet(sheet);
+  }, []);
 
   const handleHomeClick = () => {
     clearVideoOrganizerAuth();
   };
 
   const handleFetchVideos = async () => {
+    if (!selectedSheet) {
+      showToast("Please select a sheet from the Sheets tab first", "error");
+      return;
+    }
+
     setIsFetching(true);
     try {
       const videos = await videoApi.fetchVideos();
@@ -58,10 +71,26 @@ export default function VideoOrganizerNavbar() {
           >
             Library
           </Link>
+          <Link
+            href="/video-organizer/sheet-metadata"
+            className={`${styles.tab} ${
+              pathname.startsWith("/video-organizer/sheet-metadata") ? styles.active : ""
+            }`}
+          >
+            Sheets
+          </Link>
+          <div className={styles.selectedSheetInfo}>
+            {selectedSheet && (
+              <span className={styles.selectedSheetText} title={`Sheet: ${selectedSheet.name}`}>
+                📋 {selectedSheet.name}
+              </span>
+            )}
+          </div>
           <button
             onClick={handleFetchVideos}
-            disabled={isFetching}
+            disabled={isFetching || !selectedSheet}
             className={styles.fetchBtn}
+            title={!selectedSheet ? "Select a sheet first" : "Fetch videos from the selected sheet"}
           >
             {isFetching ? "Fetching..." : "🔄 Fetch Videos"}
           </button>

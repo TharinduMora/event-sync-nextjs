@@ -3,9 +3,7 @@ import { google } from "googleapis";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { link, tags, timeDuration, thumbnail, sheetId: providedSheetId } = body;
-  const { searchParams } = new URL(request.url);
-  const sheetIdParam = searchParams.get("sheetId");
+  const { id, name, google_sheet_id } = body;
 
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -16,26 +14,21 @@ export async function POST(request: Request) {
   });
 
   const sheets = google.sheets({ version: "v4", auth });
-  
-  // Use provided sheetId from body, query params, or fall back to env variable
-  const sheetId = providedSheetId || sheetIdParam || (process.env.GOOGLE_SHEET_ID as string);
+  const sheetId = process.env.GOOGLE_MEATASHEED_ID as string;
 
   const response = await sheets.spreadsheets.values.append({
     spreadsheetId: sheetId,
-    range: "Sheet1!A:E",
+    range: "Sheet1!A:C",
     valueInputOption: "USER_ENTERED",
     requestBody: {
-      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration, encrypt(thumbnail || "")]],
+      values: [[id, encrypt(name), google_sheet_id]],
     },
   });
 
   return Response.json({ success: true, data: response.data });
 }
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const sheetIdParam = searchParams.get("sheetId");
-
+export async function GET() {
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -46,12 +39,11 @@ export async function GET(request: Request) {
 
   const sheets = google.sheets({ version: "v4", auth });
 
-  // Use provided sheetId or fall back to env variable
-  const sheetId = sheetIdParam || (process.env.GOOGLE_SHEET_ID as string);
+  const sheetId = process.env.GOOGLE_MEATASHEED_ID as string;
 
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: "Sheet1!A:E", // adjust if your sheet name or columns differ
+    range: "Sheet1!A:C",
   });
 
   const rows = response.data.values || [];
@@ -60,21 +52,17 @@ export async function GET(request: Request) {
   const dataWithId = rows
     .filter((r, i) => i != 0)
     .map((row, idx) => ({
-      id: idx,
-      date: row[0],
-      link: decrypt(row[1]),
-      tags: decrypt(row[2]),
-      timeDuration: row[3],
-      thumbnail: row[4] ? decrypt(row[4]) : undefined,
+      rowId: idx,
+      id: row[0],
+      name: decrypt(row[1]),
+      google_sheet_id: row[2],
     }));
   return Response.json({ success: true, data: dataWithId });
 }
 
 export async function PUT(request: Request) {
   const body = await request.json();
-  const { id, link, tags, timeDuration, thumbnail, sheetId: providedSheetId } = body;
-  const { searchParams } = new URL(request.url);
-  const sheetIdParam = searchParams.get("sheetId");
+  const { rowId, id, name, google_sheet_id } = body;
 
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -85,19 +73,17 @@ export async function PUT(request: Request) {
   });
 
   const sheets = google.sheets({ version: "v4", auth });
-  
-  // Use provided sheetId from body, query params, or fall back to env variable
-  const sheetId = providedSheetId || sheetIdParam || (process.env.GOOGLE_SHEET_ID as string);
+  const sheetId = process.env.GOOGLE_MEATASHEED_ID as string;
 
-  // Row index is id + 2 (1 for header, 1 for 0-based to 1-based conversion)
-  const rowIndex = id + 2;
+  // Row index is rowId + 2 (1 for header, 1 for 0-based to 1-based conversion)
+  const rowIndex = rowId + 2;
 
   const response = await sheets.spreadsheets.values.update({
     spreadsheetId: sheetId,
-    range: `Sheet1!A${rowIndex}:E${rowIndex}`,
+    range: `Sheet1!A${rowIndex}:C${rowIndex}`,
     valueInputOption: "USER_ENTERED",
     requestBody: {
-      values: [[new Date(), encrypt(link), encrypt(tags), timeDuration, encrypt(thumbnail || "")]],
+      values: [[id, encrypt(name), google_sheet_id]],
     },
   });
 
