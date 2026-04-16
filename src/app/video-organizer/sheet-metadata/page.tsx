@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { metadataApi, SheetMetadata } from "./utils";
 import { sheetSelection } from "../utils/sheetSelection";
+import { metadataStorage } from "./metadataStorage";
 import VideoOrganizerNavbar from "../components/navbar";
 import PasswordProtection from "../components/PasswordProtection";
 import { ToastProvider } from "../components/ToastProvider";
@@ -13,29 +14,36 @@ function SheetMetadataListContent() {
   const router = useRouter();
   const [data, setData] = useState<SheetMetadata[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [selectingId, setSelectingId] = useState<number | null>(null);
   const [selectedSheetId, setSelectedSheetId] = useState<number | null>(null);
 
+  // Load from local storage on mount
   useEffect(() => {
-    loadData();
-    // Load current selected sheet
-    const selected = sheetSelection.getSelectedSheet();
-    if (selected) {
-      const sheetData = data.find((d) => d.google_sheet_id === selected.google_sheet_id);
-      if (sheetData && sheetData.rowId !== undefined) {
-        setSelectedSheetId(sheetData.rowId);
+    const cachedData = metadataStorage.getCachedMetadata();
+    if (cachedData) {
+      setData(cachedData);
+      // Load current selected sheet after data loads
+      const selected = sheetSelection.getSelectedSheet();
+      if (selected) {
+        const sheetData = cachedData.find((d: SheetMetadata) => d.google_sheet_id === selected.google_sheet_id);
+        if (sheetData && sheetData.rowId !== undefined) {
+          setSelectedSheetId(sheetData.rowId);
+        }
       }
     }
   }, []);
 
-  const loadData = async () => {
-    setIsLoading(true);
+  // Fetch data from API and save to cache
+  const handleSync = async () => {
+    setIsSyncing(true);
     try {
       const result = await metadataApi.getAll();
       setData(result);
+      metadataStorage.saveCachedMetadata(result);
+      
       // Load current selected sheet after data loads
       const selected = sheetSelection.getSelectedSheet();
       if (selected) {
@@ -44,11 +52,13 @@ function SheetMetadataListContent() {
           setSelectedSheetId(sheetData.rowId);
         }
       }
+      
+      showToast("Sheet metadata synced successfully!", "success");
     } catch (error) {
-      console.error("Error loading metadata:", error);
-      showToast("Failed to load sheet metadata", "error");
+      console.error("Error syncing metadata:", error);
+      showToast("Failed to sync sheet metadata", "error");
     } finally {
-      setIsLoading(false);
+      setIsSyncing(false);
     }
   };
 
@@ -122,22 +132,32 @@ function SheetMetadataListContent() {
             )}
           </div>
           <div className={styles.addBtnContainer}>
+            <button
+              onClick={handleSync}
+              disabled={isSyncing}
+              className={styles.syncBtn}
+              title="Sync sheet metadata from Google Sheets"
+            >
+              {isSyncing ? "Syncing..." : "🔄 Sync"}
+            </button>
             <Link href="/video-organizer/sheet-metadata/add" className={styles.addBtn}>
               + Add New Sheet
             </Link>
           </div>
         </div>
 
-        {isLoading ? (
+        {isSyncing ? (
           <div className={styles.loaderContainer}>
             <div className={styles.loader}></div>
-            <p className={styles.loadingText}>Loading metadata...</p>
+            <p className={styles.loadingText}>Syncing metadata...</p>
           </div>
+        ) : data.length === 0 ? (
+          <p className={styles.noResults}>
+            No sheet metadata found. Click "Sync" to fetch from Google Sheets or create one manually!
+          </p>
         ) : filteredData.length === 0 ? (
           <p className={styles.noResults}>
-            {data.length === 0
-              ? "No sheet metadata found. Create one to get started!"
-              : "No metadata found matching your search."}
+            No metadata found matching your search.
           </p>
         ) : (
           <table className={styles.table}>

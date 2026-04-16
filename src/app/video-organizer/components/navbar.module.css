@@ -58,31 +58,6 @@
   border-color: #4299e1;
 }
 
-.fetchBtn {
-  padding: 0.6rem 1.2rem;
-  background: #48bb78;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.fetchBtn:hover:not(:disabled) {
-  background: #38a169;
-  transform: translateY(-1px);
-}
-
-.fetchBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .selectedSheetInfo {
   display: flex;
   align-items: center;
@@ -123,11 +98,6 @@
   }
 
   .tab {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.8rem;
-  }
-
-  .fetchBtn {
     padding: 0.5rem 0.8rem;
     font-size: 0.8rem;
   }

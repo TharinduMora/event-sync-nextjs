@@ -4,16 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./navbar.module.css";
 import { clearVideoOrganizerAuth } from "./PasswordProtection";
-import { videoApi } from "../utils/videoApi";
-import { videoStorage } from "../utils/videoStorage";
-import { useToast } from "./ToastProvider";
 import { sheetSelection, SelectedSheet } from "../utils/sheetSelection";
 
 export default function VideoOrganizerNavbar() {
   const pathname = usePathname();
-  const [isFetching, setIsFetching] = useState(false);
   const [selectedSheet, setSelectedSheet] = useState<SelectedSheet | null>(null);
-  const { showToast } = useToast();
 
   // Load selected sheet on mount
   useEffect(() => {
@@ -23,29 +18,6 @@ export default function VideoOrganizerNavbar() {
 
   const handleHomeClick = () => {
     clearVideoOrganizerAuth();
-  };
-
-  const handleFetchVideos = async () => {
-    if (!selectedSheet) {
-      showToast("Please select a sheet from the Sheets tab first", "error");
-      return;
-    }
-
-    setIsFetching(true);
-    try {
-      const videos = await videoApi.fetchVideos();
-      videoStorage.saveVideoList(videos);
-      showToast(`Successfully fetched ${videos.length} videos!`, "success");
-      // Reload the page if on list page
-      if (pathname === "/video-organizer/list") {
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error("Error fetching videos:", error);
-      showToast("Failed to fetch videos. Please try again.", "error");
-    } finally {
-      setIsFetching(false);
-    }
   };
 
   return (
@@ -86,14 +58,6 @@ export default function VideoOrganizerNavbar() {
               </span>
             )}
           </div>
-          <button
-            onClick={handleFetchVideos}
-            disabled={isFetching || !selectedSheet}
-            className={styles.fetchBtn}
-            title={!selectedSheet ? "Select a sheet first" : "Fetch videos from the selected sheet"}
-          >
-            {isFetching ? "Fetching..." : "🔄 Fetch Videos"}
-          </button>
         </div>
       </div>
     </nav>

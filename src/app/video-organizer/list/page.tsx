@@ -5,9 +5,10 @@ import { useSearchParams, useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import VideoOrganizerNavbar from "../components/navbar";
 import PasswordProtection from "../components/PasswordProtection";
-import { ToastProvider } from "../components/ToastProvider";
+import { ToastProvider, useToast } from "../components/ToastProvider";
 import { VideoItem } from "../utils/types";
 import { videoStorage } from "../utils/videoStorage";
+import { videoApi } from "../utils/videoApi";
 import { sheetSelection, SelectedSheet } from "../utils/sheetSelection";
 
 const ITEMS_PER_PAGE = 9;
@@ -15,10 +16,12 @@ const ITEMS_PER_PAGE = 9;
 function ListPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { showToast } = useToast();
   const [data, setData] = useState<VideoItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
   const [selectedSheet, setSelectedSheet] = useState<SelectedSheet | null>(null);
 
   useEffect(() => {
@@ -39,6 +42,26 @@ function ListPageContent() {
       setIsLoading(false);
     }
   }, []);
+
+  const handleFetchVideos = async () => {
+    if (!selectedSheet) {
+      showToast("Please select a sheet from the Sheets tab first", "error");
+      return;
+    }
+
+    setIsFetching(true);
+    try {
+      const videos = await videoApi.fetchVideos();
+      videoStorage.saveVideoList(videos);
+      setData(videos);
+      showToast(`Successfully fetched ${videos.length} videos!`, "success");
+    } catch (error) {
+      console.error("Error fetching videos:", error);
+      showToast("Failed to fetch videos. Please try again.", "error");
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
   // Set search query from URL parameter
   useEffect(() => {
@@ -198,6 +221,17 @@ function ListPageContent() {
               Clear
             </button>
           )}
+        </div>
+
+        <div className={styles.actionContainer}>
+          <button
+            onClick={handleFetchVideos}
+            disabled={isFetching || !selectedSheet}
+            className={styles.fetchBtn}
+            title={!selectedSheet ? "Select a sheet first" : "Fetch videos from the selected sheet"}
+          >
+            {isFetching ? "Fetching..." : "🔄 Fetch Videos"}
+          </button>
         </div>
 
         {isLoading ? (
