@@ -31,16 +31,22 @@ function ListPageContent() {
   }, []);
 
   useEffect(() => {
-    // Load videos from localStorage only
-    setIsLoading(true);
-    try {
-      const videos = videoStorage.getVideoList();
-      setData(videos || []);
-    } catch (error) {
-      console.error("Error loading videos:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    const loadVideos = () => {
+      setIsLoading(true);
+      try {
+        const videos = videoStorage.getVideoList();
+        setData(videos || []);
+      } catch (error) {
+        console.error("Error loading videos:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadVideos();
+    const unsubscribe = videoStorage.subscribeToVideoDataUpdates(loadVideos);
+
+    return () => unsubscribe();
   }, []);
 
   const handleFetchVideos = async () => {

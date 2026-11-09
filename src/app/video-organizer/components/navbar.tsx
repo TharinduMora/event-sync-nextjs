@@ -44,6 +44,14 @@ export default function VideoOrganizerNavbar() {
             Library
           </Link>
           <Link
+            href="/video-organizer/categories"
+            className={`${styles.tab} ${
+              pathname === "/video-organizer/categories" ? styles.active : ""
+            }`}
+          >
+            Categories
+          </Link>
+          <Link
             href="/video-organizer/sheet-metadata"
             className={`${styles.tab} ${
               pathname.startsWith("/video-organizer/sheet-metadata") ? styles.active : ""

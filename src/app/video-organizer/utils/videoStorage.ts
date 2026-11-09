@@ -2,8 +2,39 @@ import { VideoItem } from "./types";
 
 const VIDEO_LIST_KEY = "videoList";
 const TAGS_KEY = "videoTags";
+const VIDEO_DATA_UPDATED_EVENT = "video-data-updated";
 
 export const videoStorage = {
+  notifyVideoDataUpdated: (): void => {
+    if (typeof window !== "undefined") {
+      const timestamp = Date.now();
+      localStorage.setItem("video-data-last-updated", String(timestamp));
+      window.dispatchEvent(new CustomEvent(VIDEO_DATA_UPDATED_EVENT, { detail: timestamp }));
+    }
+  },
+
+  subscribeToVideoDataUpdates: (callback: () => void): (() => void) => {
+    if (typeof window === "undefined") {
+      return () => undefined;
+    }
+
+    const handleUpdate = () => callback();
+    window.addEventListener(VIDEO_DATA_UPDATED_EVENT, handleUpdate);
+
+    const handleStorageUpdate = (event: StorageEvent) => {
+      if (event.key === "video-data-last-updated") {
+        callback();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageUpdate);
+
+    return () => {
+      window.removeEventListener(VIDEO_DATA_UPDATED_EVENT, handleUpdate);
+      window.removeEventListener("storage", handleStorageUpdate);
+    };
+  },
+
   // Save video list to localStorage
   saveVideoList: (videos: VideoItem[]): void => {
     if (typeof window !== "undefined") {
@@ -16,6 +47,7 @@ export const videoStorage = {
         tags.forEach(tag => allTags.add(tag));
       });
       localStorage.setItem(TAGS_KEY, JSON.stringify(Array.from(allTags)));
+      videoStorage.notifyVideoDataUpdated();
     }
   },
 

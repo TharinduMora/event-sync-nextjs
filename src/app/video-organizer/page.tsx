@@ -83,6 +83,28 @@ function HomePageContent() {
         thumbnail
       });
 
+      const existingVideos = videoStorage.getVideoList() || [];
+      const newVideo: {
+        id: number;
+        date: string;
+        link: string;
+        tags: string;
+        timeDuration: string;
+        thumbnail?: string;
+        status: string;
+      } = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        link,
+        tags: tagsString,
+        timeDuration: timeDuration || "0",
+        thumbnail: thumbnail || undefined,
+        status: "ACTIVE",
+      };
+
+      const updatedVideos = [...existingVideos, newVideo];
+      videoStorage.saveVideoList(updatedVideos);
+
       // Clear form on success
       setLink("");
       setThumbnail("");
